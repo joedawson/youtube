@@ -148,7 +148,10 @@ class Youtube {
 			$chunkSize
 		);
 
-		$media->setFileSize(File::size($path));
+		/* ------------------------------------
+		#. Set the Filesize
+		------------------------------------ */
+		$media->setFileSize(filesize($path));
 
 		/* ------------------------------------
 		#. Read the file and upload in chunks
