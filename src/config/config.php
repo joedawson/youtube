@@ -18,10 +18,19 @@ return [
 	'client_secret' => getenv('GOOGLE_CLIENT_SECRET'),
 
 	/**
+	 * Route Base URI. You can use this to prefix all route URI's.
+	 * Example: 'admin', would prefix the below routes with 'http://domain.com/admin/'
+	 */
+	'route_base_uri' => '',
+
+	/**
 	 * Redirect URI, this does not include your TLD.
 	 * Example: 'callback' would be http://domain.com/callback
 	 */
-	'redirect_uri' => 'callback',
+	'redirect_uri' => 'youtube-callback',
+
+
+	'authentication_uri' => 'youtube-auth',
 
 	/**
 	 * Scopes.
