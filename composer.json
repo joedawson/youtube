@@ -11,12 +11,12 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "5.0.*",
-        "google/apiclient": "dev-master"
+        "google/apiclient": "1.1.*"
     },
     "autoload": {
         "psr-0": {
             "Dawson\\Youtube": "src/"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }

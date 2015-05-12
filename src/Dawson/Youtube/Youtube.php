@@ -2,15 +2,12 @@
 
 use File;
 use DB;
-use Exception;
 use Carbon\Carbon;
 
 class Youtube {
 
 	protected $client;
 	protected $youtube;
-	protected $snippet;
-	protected $video;
 
 	/**
 	 * Constructor accepts the Google Client object, whilst setting the configuration options.
@@ -23,6 +20,7 @@ class Youtube {
 		$this->client->setClientId(config('youtube.client_id'));
 		$this->client->setClientSecret(config('youtube.client_secret'));
 		$this->client->setScopes(config('youtube.scopes'));
+		$this->client->setClassConfig('Google_Http_Request', 'disable_gzip', true);
 
 		$redirect_uri = config('youtube.route_base_uri') ?
 			config('youtube.route_base_uri') . '/' . config('youtube.redirect_uri') : 
@@ -30,8 +28,6 @@ class Youtube {
 		$this->client->setRedirectUri(url($redirect_uri));
 
 		$this->youtube = new \Google_Service_YouTube($this->client);
-		$this->snippet = new \Google_Service_YouTube_VideoSnippet();
-		$this->video = new \Google_Service_YouTube_Video();
 
 		$accessToken = $this->getLatestAccessTokenFromDB();
 
@@ -75,7 +71,7 @@ class Youtube {
 	 * @param  string 	$status  	The status of the uploaded video, set to 'public' by default.
 	 * @return mixed
 	 */
-	public function upload($path, array $snippet, $privacyStatus = 'public', $development = false)
+	public function upload($path, array $data, $privacyStatus = 'public')
 	{
 		/* ------------------------------------
 		#. Get Access Token
@@ -87,11 +83,7 @@ class Youtube {
 		------------------------------------ */
 		if(is_null($accessToken))
 		{
-			if($development) {
-				$this->client->setDeveloperKey(config('youtube.developer_key'));
-			} else {
-				throw new Exception('An access token is required to attempt an upload.');
-			}
+			throw new \Exception('An access token is required to attempt an upload.');
 		}
 
 		/* ------------------------------------
@@ -100,6 +92,9 @@ class Youtube {
 		if($this->client->isAccessTokenExpired())
 		{
 			$accessToken = json_decode($accessToken);
+
+			dd($accessToken);
+
 			$refreshToken = $accessToken->refresh_token;
 			$this->client->refreshToken($refreshToken);
 			$newAccessToken = $this->client->getAccessToken();
@@ -109,8 +104,9 @@ class Youtube {
 		/* ------------------------------------
 		#. Setup the Snippet
 		------------------------------------ */
-		$this->snippet->setTitle($snippet['title']);
-		$this->snippet->setDescription($snippet['description']);
+		$snippet = new \Google_Service_YouTube_VideoSnippet();
+		$snippet->setTitle($data['title']);
+		$snippet->setDescription($data['description']);
 
 		/* ------------------------------------
 		#. Set the Privacy Status
@@ -121,8 +117,9 @@ class Youtube {
 		/* ------------------------------------
 		#. Set the Snippet & Status
 		------------------------------------ */
-		$this->video->setSnippet($this->snippet);
-		$this->video->setStatus($status);
+		$video = new \Google_Service_YouTube_Video();
+		$video->setSnippet($snippet);
+		$video->setStatus($status);
 
 		/* ------------------------------------
 		#. Set the Chunk Size
@@ -137,14 +134,14 @@ class Youtube {
 		/* ------------------------------------
 		#. Build the request
 		------------------------------------ */
-		$request = $this->youtube->videos->insert('status,snippet', $this->video);
+		$insert = $this->youtube->videos->insert('status,snippet', $video);
 
 		/* ------------------------------------
 		#. Upload
 		------------------------------------ */
 		$media = new \Google_Http_MediaFileUpload(
 			$this->client,
-			$request,
+			$insert,
 			'video/*',
 			null,
 			true,
@@ -156,22 +153,25 @@ class Youtube {
 		/* ------------------------------------
 		#. Read the file and upload in chunks
 		------------------------------------ */
-		$upload = false;
+		$status = false;
 		$handle = fopen(public_path($path), "rb");
-		while (!$upload && !feof($handle)) {
-			$chunk = fread($handle, $chunkSize);
-			$upload = $media->nextChunk($chunk);
-		}
-		fclose($handle);
 
-		dd('Fails');
+		while (!$status && !feof($handle)) {
+			$chunk = fread($handle, $chunkSize);
+			$status = $media->nextChunk($chunk);
+		}
+
+		fclose($handle);
 
 		/* ------------------------------------
 		#. Set the defer to false again
 		------------------------------------ */
 		$this->client->setDefer(true);
 
-		dd($upload);
+		/* ------------------------------------
+		#. Return the Uploaded Video ID
+		------------------------------------ */
+		return $status['id'];
 	}
 	
 	/**
