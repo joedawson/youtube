@@ -92,9 +92,6 @@ class Youtube {
 		if($this->client->isAccessTokenExpired())
 		{
 			$accessToken = json_decode($accessToken);
-
-			dd($accessToken);
-
 			$refreshToken = $accessToken->refresh_token;
 			$this->client->refreshToken($refreshToken);
 			$newAccessToken = $this->client->getAccessToken();
@@ -175,6 +172,48 @@ class Youtube {
 		#. Return the Uploaded Video ID
 		------------------------------------ */
 		return $status['id'];
+	}
+
+	/**
+	 * Delete a YouTube video by it's ID.
+	 * @param  integer $youtube_id
+	 * @return Mixed
+	 */
+	public function delete($youtube_id)
+	{
+		/* ------------------------------------
+		#. Get Access Token
+		------------------------------------ */
+		$accessToken = $this->client->getAccessToken();
+
+		/* ------------------------------------
+		#. Authenticate if no Access Token
+		------------------------------------ */
+		if(is_null($accessToken))
+		{
+			throw new \Exception('An access token is required to delete a video.');
+		}
+
+		/* ------------------------------------
+		#. Refresh Access token if needed
+		------------------------------------ */
+		if($this->client->isAccessTokenExpired())
+		{
+			$accessToken = json_decode($accessToken);
+			$refreshToken = $accessToken->refresh_token;
+			$this->client->refreshToken($refreshToken);
+			$newAccessToken = $this->client->getAccessToken();
+			$this->saveAccessTokenToDB($newAccessToken);
+		}
+
+		$result = $this->youtube->videos->delete($youtube_id);
+
+		if (!$result)
+		{
+			throw new \Exception("Unable to delete video matching id " . $youtube_id);
+		}
+
+		return true;
 	}
 	
 	/**
