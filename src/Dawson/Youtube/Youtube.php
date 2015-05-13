@@ -1,7 +1,7 @@
 <?php namespace Dawson\Youtube;
 
-use File;
 use DB;
+use Storage;
 use Carbon\Carbon;
 
 class Youtube {
@@ -151,13 +151,13 @@ class Youtube {
 		/* ------------------------------------
 		#. Set the Filesize
 		------------------------------------ */
-		$media->setFileSize(public_path(filesize($path)));
+		$media->setFileSize(Storage::size($path));
 
 		/* ------------------------------------
 		#. Read the file and upload in chunks
 		------------------------------------ */
 		$status = false;
-		$handle = fopen(public_path($path), "rb");
+		$handle = fopen(storage_path('app/' . $path), "rb");
 
 		while (!$status && !feof($handle)) {
 			$chunk = fread($handle, $chunkSize);
