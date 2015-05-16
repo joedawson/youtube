@@ -102,8 +102,23 @@ class Youtube {
 		#. Setup the Snippet
 		------------------------------------ */
 		$snippet = new \Google_Service_YouTube_VideoSnippet();
-		$snippet->setTitle($data['title']);
-		$snippet->setDescription($data['description']);
+		if (array_key_exists('title', $data))
+		{
+			$snippet->setTitle($data['title']);
+		}
+		if (array_key_exists('description', $data))
+		{
+			$snippet->setDescription($data['description']);
+		}
+		if (array_key_exists('tags', $data))
+		{
+			$snippet->setTags($data['tags']);
+		}
+		if (array_key_exists('category_id', $data))
+		{
+			$snippet->setCategoryId($data['category_id']);
+		}
+
 
 		/* ------------------------------------
 		#. Set the Privacy Status
