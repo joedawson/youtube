@@ -29,8 +29,20 @@ return [
 	 */
 	'redirect_uri' => 'youtube-callback',
 
-
+	/**
+	 * The autentication URI in with you will require to first authorize with Google.
+	 */
 	'authentication_uri' => 'youtube-auth',
+
+	/**
+	 * Access Type
+	 */
+	'access_type' => 'offline',
+
+	/**
+	 * Approval Prompt
+	 */
+	'approval_prompt' => 'auto',
 
 	/**
 	 * Scopes.

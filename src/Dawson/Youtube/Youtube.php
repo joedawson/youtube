@@ -20,6 +20,8 @@ class Youtube {
 		$this->client->setClientId(config('youtube.client_id'));
 		$this->client->setClientSecret(config('youtube.client_secret'));
 		$this->client->setScopes(config('youtube.scopes'));
+		$this->client->setAccessType(config('youtube.access_type'));
+		$this->client->setApprovalPrompt(config('youtube.approval_prompt'));
 		$this->client->setClassConfig('Google_Http_Request', 'disable_gzip', true);
 
 		$redirect_uri = config('youtube.route_base_uri') ?
