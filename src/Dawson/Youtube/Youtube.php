@@ -75,30 +75,7 @@ class Youtube {
 	 */
 	public function upload($path, array $data, $privacyStatus = 'public')
 	{
-		/* ------------------------------------
-		#. Get Access Token
-		------------------------------------ */
-		$accessToken = $this->client->getAccessToken();
-
-		/* ------------------------------------
-		#. Authenticate if no Access Token
-		------------------------------------ */
-		if(is_null($accessToken))
-		{
-			throw new \Exception('An access token is required to attempt an upload.');
-		}
-
-		/* ------------------------------------
-		#. Refresh Access token if needed
-		------------------------------------ */
-		if($this->client->isAccessTokenExpired())
-		{
-			$accessToken = json_decode($accessToken);
-			$refreshToken = $accessToken->refresh_token;
-			$this->client->refreshToken($refreshToken);
-			$newAccessToken = $this->client->getAccessToken();
-			$this->saveAccessTokenToDB($newAccessToken);
-		}
+		$this->handleAccessToken();
 
 		/* ------------------------------------
 		#. Setup the Snippet
@@ -170,12 +147,12 @@ class Youtube {
 		/* ------------------------------------
 		#. Read the file and upload in chunks
 		------------------------------------ */
-		$status = false;
+		$response = false;
 		$handle = fopen(storage_path('app/' . $path), "rb");
 
 		while (!$status && !feof($handle)) {
 			$chunk = fread($handle, $chunkSize);
-			$status = $media->nextChunk($chunk);
+			$response = $media->nextChunk($chunk);
 		}
 
 		fclose($handle);
@@ -188,32 +165,60 @@ class Youtube {
 		/* ------------------------------------
 		#. Return the Uploaded Video ID
 		------------------------------------ */
-		return $status['id'];
+		return $response['id'];
 	}
 
 	/**
 	 * Delete a YouTube video by it's ID.
+	 * 
 	 * @param  integer $youtube_id
 	 * @return Mixed
 	 */
-	public function delete($youtube_id)
+	public function delete($id)
 	{
-		/* ------------------------------------
-		#. Get Access Token
-		------------------------------------ */
+		$this->handleAccessToken();
+
+		if($this->exists($id))
+		{
+			return $this->youtube->videos->delete($id);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if a YouTube video exists by it's ID.
+	 * @param  integer $id
+	 * @return boolean
+	 */
+	public function exists($id)
+	{
+		$this->handleAccessToken();
+
+		$response = $this->youtube->videos->listVideos('status', ['id' => $id]);
+
+		if(empty($response->items))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Handle the Access token
+	 * 
+	 * @return mixed
+	 */
+	private function handleAccessToken()
+	{
 		$accessToken = $this->client->getAccessToken();
 
-		/* ------------------------------------
-		#. Authenticate if no Access Token
-		------------------------------------ */
 		if(is_null($accessToken))
 		{
 			throw new \Exception('An access token is required to delete a video.');
 		}
 
-		/* ------------------------------------
-		#. Refresh Access token if needed
-		------------------------------------ */
 		if($this->client->isAccessTokenExpired())
 		{
 			$accessToken = json_decode($accessToken);
@@ -222,15 +227,6 @@ class Youtube {
 			$newAccessToken = $this->client->getAccessToken();
 			$this->saveAccessTokenToDB($newAccessToken);
 		}
-
-		$result = $this->youtube->videos->delete($youtube_id);
-
-		if (!$result)
-		{
-			throw new \Exception("Unable to delete video matching id " . $youtube_id);
-		}
-
-		return true;
 	}
 	
 	/**
