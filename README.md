@@ -6,7 +6,7 @@ If you've ever needed to upload videos to a single YouTube channel from your Lar
 
 Add the following to your `composer.json`.
 
-```
+```json
 "dawson/youtube": "1.*"
 ```
 
