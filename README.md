@@ -1,3 +1,3 @@
 # Laravel YouTube Uploader
 
-This is currently a work in progress, use at your own risk.
+Documentation coming this evening. [21/05/15]
