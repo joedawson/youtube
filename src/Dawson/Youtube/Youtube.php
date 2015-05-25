@@ -150,7 +150,7 @@ class Youtube {
 		$response = false;
 		$handle = fopen(storage_path('app/' . $path), "rb");
 
-		while (!$status && !feof($handle)) {
+		while (!$response && !feof($handle)) {
 			$chunk = fread($handle, $chunkSize);
 			$response = $media->nextChunk($chunk);
 		}
