@@ -147,12 +147,12 @@ class Youtube {
 		/* ------------------------------------
 		#. Read the file and upload in chunks
 		------------------------------------ */
-		$response = false;
+		$status = false;
 		$handle = fopen(storage_path('app/' . $path), "rb");
 
-		while (!$response && !feof($handle)) {
+		while (!$status && !feof($handle)) {
 			$chunk = fread($handle, $chunkSize);
-			$response = $media->nextChunk($chunk);
+			$status = $media->nextChunk($chunk);
 		}
 
 		fclose($handle);
@@ -165,7 +165,7 @@ class Youtube {
 		/* ------------------------------------
 		#. Return the Uploaded Video ID
 		------------------------------------ */
-		return $response['id'];
+		return $status['id'];
 	}
 
 	/**
