@@ -7,7 +7,7 @@ If you've ever needed to upload videos to a single YouTube channel from your Lar
 Add the following to your `composer.json`.
 
 ```json
-"dawson/youtube": "1.*"
+"dawson/youtube": "1.0.*"
 ```
 
 After you've added the above, run `composer update` to pull it in. Once your update has finished, we'll need to add the service provider to your `config/app.php`
