@@ -14,7 +14,6 @@ After you've added the above, run `composer update` to pull it in. Once your upd
 
 ```php
 'providers' => [
-	...
 	'Dawson\Youtube\YoutubeServiceProvider',
 ],
 ```
@@ -23,7 +22,6 @@ Then add the alias...
 
 ```php
 'aliases' => [
-	...
 	'Youtube' => 'Dawson\Youtube\YoutubeFacade',
 ],
 ```
@@ -59,7 +57,7 @@ Proceed with hitting the auth route in your application of which you will be sen
 
 # Upload a Video
 
-Once you have complete the above, your Laravel application will now be authorized to make requests to YouTube. Specifically in this case, uploading a video.
+Once you have complete the above, your Laravel application will now be authorized to make requests to YouTube. Specifically in this case, uploading a video by passing the **full path to the file you wish to upload.**.
 
 To upload a video, do the following:
 

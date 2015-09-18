@@ -142,13 +142,13 @@ class Youtube {
 		/* ------------------------------------
 		#. Set the Filesize
 		------------------------------------ */
-		$media->setFileSize(Storage::size($path));
+		$media->setFileSize(filesize($path));
 
 		/* ------------------------------------
 		#. Read the file and upload in chunks
 		------------------------------------ */
 		$status = false;
-		$handle = fopen(storage_path('app/' . $path), "rb");
+		$handle = fopen($path, "rb");
 
 		while (!$status && !feof($handle)) {
 			$chunk = fread($handle, $chunkSize);
