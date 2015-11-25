@@ -7,7 +7,7 @@ If you've ever needed to upload videos to a single YouTube channel from your Lar
 Add the following to your `composer.json`.
 
 ```json
-"dawson/youtube": "1.0.*"
+"dawson/youtube": "dev-master"
 ```
 
 After you've added the above, run `composer update` to pull it in. Once your update has finished, we'll need to add the service provider to your `config/app.php`
@@ -107,4 +107,4 @@ When deleting a video, it will check if exists before attempting to delete.
 
 # Questions
 
-Should you have any questions, please feel free to email me on [hi@joedawson.me](mailto:hi@joedawson.me) and I'm also available on Twitter [@joedawsonnn](http://twitter.com/joedawsonnn)
+Should you have any questions, please feel free to submit an issue.
