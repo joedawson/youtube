@@ -1,11 +1,10 @@
 <?php namespace Dawson\Youtube;
 
 use DB;
-use Storage;
 use Carbon\Carbon;
 
-class Youtube {
-
+class Youtube
+{
 	protected $client;
 	protected $youtube;
 
@@ -24,10 +23,9 @@ class Youtube {
 		$this->client->setApprovalPrompt(config('youtube.approval_prompt'));
 		$this->client->setClassConfig('Google_Http_Request', 'disable_gzip', true);
 
-		$redirect_uri = config('youtube.route_base_uri') ?
-			config('youtube.route_base_uri') . '/' . config('youtube.redirect_uri') : 
-			config('youtube.redirect_uri');
-		$this->client->setRedirectUri(url($redirect_uri));
+		$this->client->setRedirectUri(url(
+			config('youtube.routes.prefix') . '/' . config('youtube.routes.redirect_uri')
+		));
 
 		$this->youtube = new \Google_Service_YouTube($this->client);
 
@@ -81,23 +79,11 @@ class Youtube {
 		#. Setup the Snippet
 		------------------------------------ */
 		$snippet = new \Google_Service_YouTube_VideoSnippet();
-		if (array_key_exists('title', $data))
-		{
-			$snippet->setTitle($data['title']);
-		}
-		if (array_key_exists('description', $data))
-		{
-			$snippet->setDescription($data['description']);
-		}
-		if (array_key_exists('tags', $data))
-		{
-			$snippet->setTags($data['tags']);
-		}
-		if (array_key_exists('category_id', $data))
-		{
-			$snippet->setCategoryId($data['category_id']);
-		}
 
+		if (array_key_exists('title', $data)) 			$snippet->setTitle($data['title']);
+		if (array_key_exists('description', $data)) 	$snippet->setDescription($data['description']);
+		if (array_key_exists('tags', $data)) 			$snippet->setTags($data['tags']);
+		if (array_key_exists('category_id', $data)) 	$snippet->setCategoryId($data['category_id']);
 
 		/* ------------------------------------
 		#. Set the Privacy Status
@@ -157,15 +143,12 @@ class Youtube {
 
 		fclose($handle);
 
-		/* ------------------------------------
-		#. Set the defer to false again
-		------------------------------------ */
-		$this->client->setDefer(true);
+		$this->client->setDefer(false);
 
-		/* ------------------------------------
-		#. Return the Uploaded Video ID
-		------------------------------------ */
-		return $status['id'];
+		/* -------------------------------------
+		#. Return the ID
+		------------------------------------- */
+		return $statis['id'];
 	}
 
 	/**
@@ -197,10 +180,7 @@ class Youtube {
 
 		$response = $this->youtube->videos->listVideos('status', ['id' => $id]);
 
-		if(empty($response->items))
-		{
-			return false;
-		}
+		if(empty($response->items)) return false;
 
 		return true;
 	}

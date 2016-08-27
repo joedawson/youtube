@@ -10,29 +10,12 @@ return [
 	/**
 	 * Client ID.
 	 */
-	'client_id' => getenv('GOOGLE_CLIENT_ID'),
+	'client_id' => env('GOOGLE_CLIENT_ID', null),
 
 	/**
 	 * Client Secret.
 	 */
-	'client_secret' => getenv('GOOGLE_CLIENT_SECRET'),
-
-	/**
-	 * Route Base URI. You can use this to prefix all route URI's.
-	 * Example: 'admin', would prefix the below routes with 'http://domain.com/admin/'
-	 */
-	'route_base_uri' => '',
-
-	/**
-	 * Redirect URI, this does not include your TLD.
-	 * Example: 'callback' would be http://domain.com/callback
-	 */
-	'redirect_uri' => 'youtube-callback',
-
-	/**
-	 * The autentication URI in with you will require to first authorize with Google.
-	 */
-	'authentication_uri' => 'youtube-auth',
+	'client_secret' => env('GOOGLE_CLIENT_SECRET', null),
 
 	/**
 	 * Access Type
@@ -56,6 +39,28 @@ return [
 	/**
 	 * Developer key.
 	 */
-	'developer_key' => getenv('GOOGLE_DEVELOPER_KEY')
+	'developer_key' => env('GOOGLE_DEVELOPER_KEY', null),
+
+	/**
+	 * Route URI's
+	 */
+	'routes' => [
+
+		/**
+		 * The prefix for the below URI's
+		 */
+		'prefix' => 'youtube',
+
+		/**
+		 * Redirect URI
+		 */
+		'redirect_uri' => 'callback',
+
+		/**
+		 * The autentication URI
+		 */
+		'authentication_uri' => 'auth',
+
+	]
 
 ];

@@ -1,106 +1,103 @@
-# Laravel 5 - YouTube Uploader
+# Laravel 5 - YouTube Video Upload
 
-If you've ever needed to upload videos to a single YouTube channel from your Laravel 5 application, then hopefully this is the package for you.
+**Please note, that this package will only work with a single YouTube account and does not support multiple accounts.**
 
 ## Installation
 
-Add the following to your `composer.json`.
+To install, use the following to pull the package in via Composer.
 
-```json
-"dawson/youtube": "dev-master"
+```
+composer require dawson/youtube
 ```
 
-After you've added the above, run `composer update` to pull it in. Once your update has finished, we'll need to add the service provider to your `config/app.php`
+Now register the Service provider in `config/app.php`
 
 ```php
 'providers' => [
+	...
 	'Dawson\Youtube\YoutubeServiceProvider',
 ],
 ```
 
-Then add the alias...
+And also add the alias to the same file.
 
 ```php
 'aliases' => [
+	...
 	'Youtube' => 'Dawson\Youtube\YoutubeFacade',
 ],
 ```
 
 ## Configuration
 
-Run `php artisan vendor:publish` to publish the migrations and config. Then migrate the database with, `php artisan migrate`.
+You now need to publish the `youtube.php` config and migrations.
 
-This will create our `youtube_access_tokens` table which will of course, hold our access tokens once we've authenticated with Google.
+```
+php artisan vendor:publish --provider="Dawson\Youtube\YoutubeServiceProvider"
+```
 
-Next it's time to configure our settings in `config/youtube.php` makes use of environment variables to ensure no secret crentials make way into version control. So add the following variables to your `.env` file.
+Now you'll want to run `php artisan migrate` to create the `youtube_access_tokens` table which as you would imagine, will contain your access tokens once you're authenticated correctly.
+
+### Obtaining your Credentials
+
+If you haven't already, you'll need to create an application on [Google's Developer Console](https://console.developers.google.com/project). You then need to head into **Credentials** within the Console to create Server key.
+
+You will be asked to enter your Authorised redirect URIs. When installing this package, the default redirect URI is `http://laravel.dev/youtube/callback`. Of course, replacing the domain (`laravel.dev`) with your applications domain name.
+
+**You can add multiple redirect URIs, for example you may want to add the URIs for your local, staging and production servers.**
+
+Once you are happy with everything, create the credentials and you will be provided with a **Client ID** and **Client Secret**. These now need to be added to your `.env` file.
 
 ```
 GOOGLE_CLIENT_ID=YOUR_CLIENT_ID
 GOOGLE_CLIENT_SECRET=YOUR_SECRET
 ```
 
-You can find these values on Google's [developer console](https://console.developers.google.com/project) for your application. 
+### Authentication
 
-Now set up your applications callback, you can find this on your `config/youtube.php`. By default it's set to `http://yourapp.co.uk/youtube-callback`
+Now your application is configured, we'll go through the inital authentication with Google. By default, the authorization route is `/youtube/auth`. Simply visit this URI in your application and you will be redirect to Google to authenticate your YouTube account.
 
-```php
-'redirect_uri' => 'youtube-callback'
-```
+Assuming you were not presented with any errors during authentication, you will be redirected back to your application root. (`/`).
 
-*If you're unsure of how to use enviroment variables, Jeffrey Way helps clear the fog over at Laracasts with his [Environments and Configuration](https://laracasts.com/series/laravel-5-fundamentals/episodes/6) lesson with Laravel 5.*
+### Reviewing your Token
 
-## Authentication
+Previously, users of this package have reported issues with their access token(s). To ensure you have the correct token, you simply need to review the `youtube_access_tokens` table you migrated earlier and review the value in the `access_token` column.
 
-Now our application is configured, we'll go through the inital authentication with Google. By default, the authorization route is `/youtube-auth` but you can change this in `config/youtube.php` should you wish to.
-
-Proceed with hitting the auth route in your application of which you will be sent to Google to authorize your YouTube account/channel. Once authorized, you will be redirected back to your application assuming you correctly configured your callback.
+**You need to check that the `token_type` is `Bearer`. If this is correct, you're all set to begin uploading. **
 
 # Upload a Video
 
-Once you have complete the above, your Laravel application will now be authorized to make requests to YouTube. Specifically in this case, uploading a video by passing the **full path to the file you wish to upload.**.
+To upload a video, you simply need to pass the **full** path to your video you wish to upload and specify your video information.
 
-To upload a video, do the following:
-
-```php
-$id = Youtube::upload($pathToMovieFile);
-
-return $id;
-```
-
-The above will return the ID of the uploaded video to YouTube.
-
-You also have the option to pass a second parameter as an array with the following available keys.
-
-- title `string`
-- description `string`
-- category_id `integer`
-- tags `array`
+Here's an example:
 
 ```php
-$params = [
-	'title'	=> 'Laravel Screencast',
-	'description' => 'My First Laravel Tutorial!',
-	'category_id' => 10,
-	'tags' => [
-		'laravel',
-		'eloquent',
-		'awesome' // Of course!
-	]
-];
+$youtubeId = Youtube::upload($pathToVideo, [
+	'title'       => 'My Awesome Video',
+	'description' => 'You can also specify your video description here.',
+	'tags'	      => ['foo', 'bar', 'baz'],
+	'category_id' => 10
+]);
 
-$id = Youtube::upload($pathToMovieFile, $params);
-
-return $id;
+return $youtubeId;
 ```
 
-It's that simple!
+The above will return the ID of the uploaded video to YouTube. (*i.e dQw4w9WgXcQ*)
+
+By default, video uploads are public. If you would like to change the privacy of the upload, you can do so by passing a third parameter to the upload method.
+
+For example, the below will upload the video as `unlisted`.
+
+```php
+$youtubeId = Youtube::upload($pathToVide, $params, 'unlisted');
+```
 
 # Deleting a Video
 
 If you would like to delete a video, which of course is uploaded to your authorized channel, you will also have the ability to delete it:
 
 ```php
-Youtube::delete($id);
+Youtube::delete($youtubeId);
 ```
 
 When deleting a video, it will check if exists before attempting to delete.

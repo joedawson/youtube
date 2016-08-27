@@ -3,16 +3,20 @@
 /**
  * Route URI's
  */
-Route::group(['prefix' => config('youtube.route_base_uri')], function() {
+Route::group(['prefix' => config('youtube.routes.prefix')], function() {
 
-	Route::get(config('youtube.authentication_uri'), function()
+	/**
+	 * Authentication
+	 */
+	Route::get(config('youtube.routes.authentication_uri'), function()
 	{
-
 		return redirect()->to(Youtube::createAuthUrl());
-
 	});
 
-	Route::get(config('youtube.redirect_uri'), function(\Illuminate\Http\Request $request)
+	/**
+	 * Redirect
+	 */
+	Route::get(config('youtube.routes.redirect_uri'), function(Illuminate\Http\Request $request)
 	{
 		$code = $request->get('code');
 
@@ -24,7 +28,6 @@ Route::group(['prefix' => config('youtube.route_base_uri')], function() {
 		}
 
 		return redirect('/');
-
 	});
 
 });

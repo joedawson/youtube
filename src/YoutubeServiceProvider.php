@@ -1,9 +1,11 @@
-<?php namespace Dawson\Youtube;
+<?php
+
+namespace Dawson\Youtube;
 
 use Illuminate\Support\ServiceProvider;
 
-class YoutubeServiceProvider extends ServiceProvider {
-
+class YoutubeServiceProvider extends ServiceProvider
+{
 	/**
 	 * Indicates if loading of the provider is deferred.
 	 *
@@ -18,14 +20,14 @@ class YoutubeServiceProvider extends ServiceProvider {
 	public function boot()
     {
 		$this->publishes([
-			__DIR__.'/../../config/config.php' => config_path('youtube.php'),
+			__DIR__.'/config/config.php' => config_path('youtube.php'),
 		], 'config');
 
 		$this->publishes([
-			__DIR__.'/../../migrations/' => database_path('/migrations')
+			__DIR__.'/migrations/' => database_path('/migrations')
 		], 'migrations');
 
-		include __DIR__.'/../../routes.php';
+		include __DIR__.'/config/routes.php';
     }
 
 	/**
