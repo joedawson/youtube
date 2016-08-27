@@ -148,7 +148,7 @@ class Youtube
 		/* -------------------------------------
 		#. Return the ID
 		------------------------------------- */
-		return $statis['id'];
+		return $status['id'];
 	}
 
 	/**
