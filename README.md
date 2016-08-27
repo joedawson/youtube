@@ -63,7 +63,7 @@ Assuming you were not presented with any errors during authentication, you will 
 
 Previously, users of this package have reported issues with their access token(s). To ensure you have the correct token, you simply need to review the `youtube_access_tokens` table you migrated earlier and review the value in the `access_token` column.
 
-**You need to check that the `token_type` is `Bearer`. If this is correct, you're all set to begin uploading. **
+**You need to check that a `refresh_token` exists within this value. If this is correct, you're all set to begin uploading. **
 
 # Upload a Video
 
