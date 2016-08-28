@@ -72,14 +72,14 @@ To upload a video, you simply need to pass the **full** path to your video you w
 Here's an example:
 
 ```php
-$youtubeId = Youtube::upload($pathToVideo, [
+$video = Youtube::upload($pathToVideo, [
 	'title'       => 'My Awesome Video',
 	'description' => 'You can also specify your video description here.',
 	'tags'	      => ['foo', 'bar', 'baz'],
 	'category_id' => 10
 ]);
 
-return $youtubeId;
+return $video->getVideoId();
 ```
 
 The above will return the ID of the uploaded video to YouTube. (*i.e dQw4w9WgXcQ*)
@@ -89,15 +89,29 @@ By default, video uploads are public. If you would like to change the privacy of
 For example, the below will upload the video as `unlisted`.
 
 ```php
-$youtubeId = Youtube::upload($pathToVide, $params, 'unlisted');
+$video = Youtube::upload($pathToVideo, $params, 'unlisted');
 ```
+
+### Custom Thumbnail
+
+If you would like to set a custom thumbnail for for upload, you can use the `withThumbnail()` method via chaining.
+
+```php
+$pathToImage = storage_path('app/public/thumbnail.jpg');
+
+$video = Youtube::upload($pathToVideo, $params)->withThumbnail($pathToImage);
+
+return $youtube->getThumbnailUrl();
+```
+
+**Please note, the maxiumum filesize for the thumbnail is 2MB**. Setting a thumbnail will not work if you attempt to use a thumbnail that exceeds this size.
 
 # Deleting a Video
 
 If you would like to delete a video, which of course is uploaded to your authorized channel, you will also have the ability to delete it:
 
 ```php
-Youtube::delete($youtubeId);
+Youtube::delete($videoId);
 ```
 
 When deleting a video, it will check if exists before attempting to delete.

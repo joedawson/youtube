@@ -155,6 +155,11 @@ class Youtube
         return $this;
 	}
 
+	/**
+	 * Set a Custom Thumbnail for the Upload
+	 * @param  string $imagePath
+	 * @return [type]            [description]
+	 */
     function withThumbnail($imagePath)
     {
         try {
@@ -200,10 +205,21 @@ class Youtube
         }
     }
 
+    /**
+     * Return the Video ID
+     * 
+     * @return string
+     */
     function getVideoId()
     {
         return $this->videoId;
     }
+
+    /**
+     * Return the URL for the Custom Thumbnail
+     * 
+     * @return string
+     */
     function getThumbnailUrl()
     {
         return $this->thumbnailUrl;
@@ -213,7 +229,7 @@ class Youtube
 	 * Delete a YouTube video by it's ID.
 	 * 
 	 * @param  integer $youtube_id
-	 * @return Mixed
+	 * @return Boolean
 	 */
 	public function delete($id)
 	{
@@ -221,10 +237,12 @@ class Youtube
 
 		if($this->exists($id))
 		{
-			return $this->youtube->videos->delete($id);
+			$this->youtube->videos->delete($id);
+
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
