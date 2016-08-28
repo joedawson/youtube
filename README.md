@@ -72,17 +72,30 @@ To upload a video, you simply need to pass the **full** path to your video you w
 Here's an example:
 
 ```php
-$youtubeId = Youtube::upload($pathToVideo, [
+$youtube = Youtube::upload($pathToVideo, [
 	'title'       => 'My Awesome Video',
 	'description' => 'You can also specify your video description here.',
 	'tags'	      => ['foo', 'bar', 'baz'],
 	'category_id' => 10
 ]);
 
-return $youtubeId;
+return $youtube->getVideoId();
 ```
 
 The above will return the ID of the uploaded video to YouTube. (*i.e dQw4w9WgXcQ*)
+
+if you want to set thumbnail for video  
+
+```php
+$youtube = Youtube::upload($pathToVideo, [
+	'title'       => 'My Awesome Video',
+	'description' => 'You can also specify your video description here.',
+	'tags'	      => ['foo', 'bar', 'baz'],
+	'category_id' => 10
+])->withThumbnail($pathToThumbnailPhoto);
+
+return $youtube->getThumbnailUrl();
+```
 
 By default, video uploads are public. If you would like to change the privacy of the upload, you can do so by passing a third parameter to the upload method.
 
