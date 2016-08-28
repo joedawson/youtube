@@ -7,7 +7,8 @@ class Youtube
 {
 	protected $client;
 	protected $youtube;
-
+    private $videoId;
+    private $thumbnailUrl;
 	/**
 	 * Constructor accepts the Google Client object, whilst setting the configuration options.
 	 * @param \Google_Client $client
@@ -145,11 +146,68 @@ class Youtube
 
 		$this->client->setDefer(false);
 
-		/* -------------------------------------
-		#. Return the ID
-		------------------------------------- */
-		return $status['id'];
+		
+        /* ------------------------------------
+        #. Set the Uploaded Video ID
+        ------------------------------------ */
+        $this->videoId = $status['id'];
+
+        return $this;
 	}
+
+    function withThumbnail($imagePath)
+    {
+        try {
+            $videoId = $this->getVideoId();
+            // Specify the size of each chunk of data, in bytes. Set a higher value for
+            // reliable connection as fewer chunks lead to faster uploads. Set a lower
+            // value for better recovery on less reliable connections.
+            $chunkSizeBytes = 1 * 1024 * 1024;
+            // Setting the defer flag to true tells the client to return a request which can be called
+            // with ->execute(); instead of making the API call immediately.
+            $this->client->setDefer(true);
+            // Create a request for the API's thumbnails.set method to upload the image and associate
+            // it with the appropriate video.
+            $setRequest = $this->youtube->thumbnails->set($videoId);
+            // Create a MediaFileUpload object for resumable uploads.
+            $media = new \Google_Http_MediaFileUpload(
+                $this->client,
+                $setRequest,
+                'image/png',
+                null,
+                true,
+                $chunkSizeBytes
+            );
+            $media->setFileSize(filesize($imagePath));
+            // Read the media file and upload it chunk by chunk.
+            $status = false;
+            $handle = fopen($imagePath, "rb");
+            while (!$status && !feof($handle)) {
+                $chunk  = fread($handle, $chunkSizeBytes);
+                $status = $media->nextChunk($chunk);
+            }
+            fclose($handle);
+            // If you want to make other calls after the file upload, set setDefer back to false
+            $this->client->setDefer(false);
+            $this->thumbnailUrl = $status['items'][0]['default']['url'];
+
+            return $this;
+
+        } catch (Google_Service_Exception $e) {
+            die($e->getMessage());
+        } catch (Google_Exception $e) {
+            die($e->getMessage());
+        }
+    }
+
+    function getVideoId()
+    {
+        return $this->videoId;
+    }
+    function getThumbnailUrl()
+    {
+        return $this->thumbnailUrl;
+    }
 
 	/**
 	 * Delete a YouTube video by it's ID.
