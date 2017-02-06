@@ -14,8 +14,8 @@ Now register the Service provider in `config/app.php`
 
 ```php
 'providers' => [
-	...
-	'Dawson\Youtube\YoutubeServiceProvider',
+    ...
+    'Dawson\Youtube\YoutubeServiceProvider',
 ],
 ```
 
@@ -23,8 +23,8 @@ And also add the alias to the same file.
 
 ```php
 'aliases' => [
-	...
-	'Youtube' => 'Dawson\Youtube\YoutubeFacade',
+    ...
+    'Youtube' => 'Dawson\Youtube\Facades\Youtube',
 ],
 ```
 
@@ -73,10 +73,10 @@ Here's an example:
 
 ```php
 $video = Youtube::upload($pathToVideo, [
-	'title'       => 'My Awesome Video',
-	'description' => 'You can also specify your video description here.',
-	'tags'	      => ['foo', 'bar', 'baz'],
-	'category_id' => 10
+    'title'       => 'My Awesome Video',
+    'description' => 'You can also specify your video description here.',
+    'tags'	      => ['foo', 'bar', 'baz'],
+    'category_id' => 10
 ]);
 
 return $video->getVideoId();
