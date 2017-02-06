@@ -6,51 +6,51 @@ use Illuminate\Support\ServiceProvider;
 
 class YoutubeServiceProvider extends ServiceProvider
 {
-	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = false;
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = false;
 
-	/**
-	 * Bootstrap the application events.
-	 * @return void
-	 */
-	public function boot()
+    /**
+     * Bootstrap the application events.
+     */
+    public function boot()
     {
-		$this->publishes([
-			__DIR__.'/config/config.php' => config_path('youtube.php'),
-		], 'config');
+        $this->publishes([
+            __DIR__.'/../config/youtube.php' => config_path('youtube.php'),
+        ], 'config');
 
-		$this->publishes([
-			__DIR__.'/migrations/' => database_path('/migrations')
-		], 'migrations');
+        $this->publishes([
+            __DIR__.'/../migrations/' => database_path('migrations')
+        ], 'migrations');
 
-		include __DIR__.'/config/routes.php';
+        include __DIR__.'/../routes/web.php';
     }
 
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
-		$this->app['youtube'] = $this->app->share(function()
-		{
-			return new Youtube(new \Google_Client);
-		});
-	}
+    /**
+     * Register the service provider.
+     */
+    public function register()
+    {
+        $this->app->singleton(Contracts\Youtube::class, function () {
+            return new Youtube(new \Google_Client);
+        });
 
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
-		return ['youtube'];
-	}
+        $this->app->singleton('youtube', Contracts\Youtube::class);
+    }
 
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [
+            Contracts\Youtube::class,
+            'youtube',
+        ];
+    }
 }
