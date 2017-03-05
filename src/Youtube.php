@@ -68,7 +68,7 @@ class Youtube implements YoutubeContract
             ->orderBy('created_at', 'desc')
             ->first();
 
-        return $latest ? $latest->access_token : null;
+        return $latest ? (is_array($latest) ? $latest['access_token'] : $latest->access_token ) : null;
     }
 
     /**
