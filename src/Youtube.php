@@ -1,74 +1,66 @@
-<?php namespace Dawson\Youtube;
+<?php
 
+namespace Dawson\Youtube;
+
+use Exception;
 use Carbon\Carbon;
-use Dawson\Youtube\Contracts\Youtube as YoutubeContract;
 use Google_Client;
+use Google_Service_YouTube;
 use Illuminate\Support\Facades\DB;
 
-class Youtube implements YoutubeContract
+class Youtube
 {
-    /** @var \Google_Client  */
+    /**
+     * Application Container
+     * 
+     * @var Application
+     */
+    private $app;
+
+    /**
+     * Google Client
+     * 
+     * @var \Google_Client
+     */
     protected $client;
 
-    /** @var \Google_Service_YouTube  */
+    /**
+     * Google YouTube Service
+     * 
+     * @var \Google_Service_YouTube
+     */
     protected $youtube;
 
+    /**
+     * Video ID
+     * 
+     * @var string
+     */
     private $videoId;
 
+    /**
+     * Thumbnail URL
+     * 
+     * @var string
+     */
     private $thumbnailUrl;
 
     /**
-     * Constructor accepts the Google Client object, whilst setting the configuration options.
-     *
-     * @param  \Google_Client  $client
+     * Constructor
+     * 
+     * @param \Google_Client $client
      */
-    public function __construct(Google_Client $client)
+    public function __construct($app, Google_Client $client)
     {
-        $this->client = $client;
-        $this->client->setApplicationName(config('youtube.application_name'));
-        $this->client->setClientId(config('youtube.client_id'));
-        $this->client->setClientSecret(config('youtube.client_secret'));
-        $this->client->setScopes(config('youtube.scopes'));
-        $this->client->setAccessType(config('youtube.access_type'));
-        $this->client->setApprovalPrompt(config('youtube.approval_prompt'));
-        $this->client->setClassConfig('Google_Http_Request', 'disable_gzip', true);
-        $this->client->setRedirectUri(url(
-            config('youtube.routes.prefix') . '/' . config('youtube.routes.redirect_uri')
-        ));
+        $this->app = $app;
+
+        $this->client = $this->setup($client);
 
         $this->youtube = new \Google_Service_YouTube($this->client);
 
         if ($accessToken = $this->getLatestAccessTokenFromDB()) {
             $this->client->setAccessToken($accessToken);
         }
-    }
-
-    /**
-     * Saves the access token to the database.
-     *
-     * @param  string  $accessToken
-     */
-    public function saveAccessTokenToDB($accessToken)
-    {
-        $data = [
-            'access_token' => $accessToken,
-            'created_at'   => Carbon::now(),
-        ];
-
-        DB::table('youtube_access_tokens')->insert($data);
-    }
-
-    /**
-     * Returns the last saved access token, if there is one, or null
-     * @return mixed
-     */
-    public function getLatestAccessTokenFromDB()
-    {
-        $latest = DB::table('youtube_access_tokens')
-            ->orderBy('created_at', 'desc')
-            ->first();
-
-        return $latest ? (is_array($latest) ? $latest['access_token'] : $latest->access_token ) : null;
     }
 
     /**
@@ -80,8 +72,27 @@ class Youtube implements YoutubeContract
      *
      * @return self
      */
+    
+    /**
+     * Upload the video to YouTube
+     * 
+     * @param  string $path
+     * @param  array  $data
+     * @param  string $privacyStatus
+     * @return string
+     */
     public function upload($path, array $data, $privacyStatus = 'public')
     {
+        /* -------------------------------------
+        #. Does the Video exist?
+        ------------------------------------- */
+        if(!file_exists($path)) {
+            throw new Exception('Video file does not exist at path: "'. $path .'". Provide a full path to the file before attempting to upload.');
+        }
+
+        /* -------------------------------------
+        #. Handle Access Token
+        ------------------------------------- */
         $this->handleAccessToken();
 
         /* ------------------------------------
@@ -154,7 +165,6 @@ class Youtube implements YoutubeContract
 
         $this->client->setDefer(false);
 
-
         /* ------------------------------------
         #. Set the Uploaded Video ID
         ------------------------------------ */
@@ -170,7 +180,7 @@ class Youtube implements YoutubeContract
      *
      * @return self
      */
-    function withThumbnail($imagePath)
+    public function withThumbnail($imagePath)
     {
         try {
             $videoId = $this->getVideoId();
@@ -222,26 +232,6 @@ class Youtube implements YoutubeContract
     }
 
     /**
-     * Return the Video ID
-     *
-     * @return string
-     */
-    function getVideoId()
-    {
-        return $this->videoId;
-    }
-
-    /**
-     * Return the URL for the Custom Thumbnail
-     *
-     * @return string
-     */
-    function getThumbnailUrl()
-    {
-        return $this->thumbnailUrl;
-    }
-
-    /**
      * Delete a YouTube video by it's ID.
      *
      * @param  int  $id
@@ -252,11 +242,11 @@ class Youtube implements YoutubeContract
     {
         $this->handleAccessToken();
 
-        if ( ! $this->exists($id)) return false;
+        if (!$this->exists($id)) {
+            throw new Exception('A video matching id "'. $id .'" could not be found.');
+        }
 
-        $this->youtube->videos->delete($id);
-
-        return true;
+        return $this->youtube->videos->delete($id);
     }
 
     /**
@@ -278,14 +268,92 @@ class Youtube implements YoutubeContract
     }
 
     /**
-     * Handle the Access token.
+     * Return the Video ID
+     *
+     * @return string
      */
-    private function handleAccessToken()
+    public function getVideoId()
+    {
+        return $this->videoId;
+    }
+
+    /**
+     * Return the URL for the Custom Thumbnail
+     *
+     * @return string
+     */
+    public function getThumbnailUrl()
+    {
+        return $this->thumbnailUrl;
+    }
+
+    /**
+     * Setup the Google Client
+     *
+     * @param \Google_Client $client
+     * @return \Google_Client $client
+     */
+    private function setup(Google_Client $client)
+    {
+        if(
+            !$this->app->config->get('youtube.client_id') ||
+            !$this->app->config->get('youtube.client_secret')
+        ) {
+            throw new Exception('A Google "client_id" and "client_secret" must be configured.');
+        }
+
+        $client->setApplicationName(config('youtube.application_name'));
+        $client->setClientId(config('youtube.client_id'));
+        $client->setClientSecret(config('youtube.client_secret'));
+        $client->setScopes(config('youtube.scopes'));
+        $client->setAccessType(config('youtube.access_type'));
+        $client->setApprovalPrompt(config('youtube.approval_prompt'));
+        $client->setClassConfig('Google_Http_Request', 'disable_gzip', true);
+        $client->setRedirectUri(url(
+            config('youtube.routes.prefix') . '/' . config('youtube.routes.redirect_uri')
+        ));
+
+        return $this->client = $client;
+    }
+
+    /**
+     * Saves the access token to the database.
+     *
+     * @param  string  $accessToken
+     */
+    public function saveAccessTokenToDB($accessToken)
+    {
+        return DB::table('youtube_access_tokens')->insert([
+            'access_token' => $accessToken,
+            'created_at'   => Carbon::now()
+        ]);
+    }
+
+    /**
+     * Get the latest access token from the database.
+     * 
+     * @return string
+     */
+    public function getLatestAccessTokenFromDB()
+    {
+        $latest = DB::table('youtube_access_tokens')
+                    ->latest('created_at')
+                    ->first();
+
+        return $latest ? (is_array($latest) ? $latest['access_token'] : $latest->access_token ) : null;
+    }
+
+    /**
+     * Handle the Access Token
+     * 
+     * @return void
+     */
+    public function handleAccessToken()
     {
         $accessToken = $this->client->getAccessToken();
 
         if (is_null($accessToken)) {
-            throw new \Exception('An access token is required to delete a video.');
+            throw new \Exception('An access token is required.');
         }
 
         if ($this->client->isAccessTokenExpired()) {

@@ -2,7 +2,6 @@
 
 namespace Dawson\Youtube\Facades;
 
-use Dawson\Youtube\Contracts\Youtube as YoutubeContract;
 use Illuminate\Support\Facades\Facade;
 
 class Youtube extends Facade
@@ -14,6 +13,6 @@ class Youtube extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return YoutubeContract::class;
+        return 'youtube';
     }
 }

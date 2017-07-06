@@ -15,7 +15,7 @@ Now register the Service provider in `config/app.php`
 ```php
 'providers' => [
     ...
-    'Dawson\Youtube\YoutubeServiceProvider',
+    Dawson\Youtube\YoutubeServiceProvider::class,
 ],
 ```
 
@@ -24,7 +24,7 @@ And also add the alias to the same file.
 ```php
 'aliases' => [
     ...
-    'Youtube' => 'Dawson\Youtube\Facades\Youtube',
+    'Youtube' => Dawson\Youtube\Facades\Youtube::class,
 ],
 ```
 
@@ -55,6 +55,8 @@ GOOGLE_CLIENT_SECRET=YOUR_SECRET
 
 ### Authentication
 
+For security reasons, the routes to authorize your channel with your Laravel application for disabled by default. You will need to enable them in your `config/youtube.php` before doing the following.
+
 Now your application is configured, we'll go through the inital authentication with Google. By default, the authorization route is `/youtube/auth`. Simply visit this URI in your application and you will be redirect to Google to authenticate your YouTube account.
 
 Assuming you were not presented with any errors during authentication, you will be redirected back to your application root. (`/`).
@@ -65,6 +67,8 @@ Previously, users of this package have reported issues with their access token(s
 
 **You need to check that a `refresh_token` exists within this value. If this is correct, you're all set to begin uploading. **
 
+You will also want to disable the routes used for authorization as they will no longer be required since you are now autheticated. The token you just reviewed, assuming as a `refresh_token` will automatically be handled. 
+
 # Upload a Video
 
 To upload a video, you simply need to pass the **full** path to your video you wish to upload and specify your video information.
@@ -72,7 +76,7 @@ To upload a video, you simply need to pass the **full** path to your video you w
 Here's an example:
 
 ```php
-$video = Youtube::upload($pathToVideo, [
+$video = Youtube::upload($fullPathToVideo, [
     'title'       => 'My Awesome Video',
     'description' => 'You can also specify your video description here.',
     'tags'	      => ['foo', 'bar', 'baz'],
@@ -89,7 +93,7 @@ By default, video uploads are public. If you would like to change the privacy of
 For example, the below will upload the video as `unlisted`.
 
 ```php
-$video = Youtube::upload($pathToVideo, $params, 'unlisted');
+$video = Youtube::upload($fullPathToVideo, $params, 'unlisted');
 ```
 
 ### Custom Thumbnail
@@ -97,9 +101,9 @@ $video = Youtube::upload($pathToVideo, $params, 'unlisted');
 If you would like to set a custom thumbnail for for upload, you can use the `withThumbnail()` method via chaining.
 
 ```php
-$pathToImage = storage_path('app/public/thumbnail.jpg');
+$fullpathToImage = storage_path('app/public/thumbnail.jpg');
 
-$video = Youtube::upload($pathToVideo, $params)->withThumbnail($pathToImage);
+$video = Youtube::upload($fullPathToVideo, $params)->withThumbnail($fullpathToImage);
 
 return $youtube->getThumbnailUrl();
 ```

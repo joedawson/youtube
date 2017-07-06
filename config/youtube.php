@@ -5,7 +5,7 @@ return [
     /**
      * Application Name.
      */
-    'application_name' => 'Your Application',
+    'application_name' => env('APP_NAME', 'Your Application'),
 
     /**
      * Client ID.
@@ -45,6 +45,12 @@ return [
      * Route URI's
      */
     'routes' => [
+
+        /** 
+         * Determine of the Routes should be disabled.
+         * Note: We recommend this to be set to "false" as soon as you have first authenticated.
+         */
+        'enabled' => false,
 
         /**
          * The prefix for the below URI's
