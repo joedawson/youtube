@@ -38,7 +38,7 @@ return [
 
         /** 
          * Determine if the Routes should be disabled.
-         * Note: We recommend this to be set to "false" as soon as you have first authenticated.
+         * Note: We recommend this to be set to "false" immediately after authentication.
          */
         'enabled' => false,
 
