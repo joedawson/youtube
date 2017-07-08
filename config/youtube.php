@@ -18,16 +18,6 @@ return [
     'client_secret' => env('GOOGLE_CLIENT_SECRET', null),
 
     /**
-     * Access Type
-     */
-    'access_type' => 'offline',
-
-    /**
-     * Approval Prompt
-     */
-    'approval_prompt' => 'auto',
-
-    /**
      * Scopes.
      */
     'scopes' => [
