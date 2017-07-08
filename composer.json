@@ -12,7 +12,7 @@
         "php": "^7.0",
         "illuminate/support": "^5.4",
         "google/apiclient": "^2.1",
-        "carbon/carbon": "^1.22"
+        "nesbot/carbon": "^1.22"
     },
     "require-dev": {
         "orchestra/testbench": "~3.2",
