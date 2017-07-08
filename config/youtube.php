@@ -57,6 +57,11 @@ return [
          */
         'authentication_uri' => 'auth',
 
+		/**
+		 * The redirect back URI
+		 */
+		'redirect_back_uri' => '/',
+
     ]
 
 ];
