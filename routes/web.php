@@ -26,7 +26,7 @@ Route::group(['prefix' => config('youtube.routes.prefix')], function() {
 
         Youtube::saveAccessTokenToDB($token);
 
-		return redirect(config('youtube.routes.redirect_back_uri'));
-	});
+        return redirect(config('youtube.routes.redirect_back_uri'));
+    });
 
 });
