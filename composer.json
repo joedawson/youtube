@@ -11,7 +11,7 @@
     "require": {
         "php": "^7.0",
         "illuminate/support": "^5.4",
-        "google/apiclient": "^2.1",
+        "google/apiclient": "^1.1",
         "nesbot/carbon": "^1.22"
     },
     "require-dev": {
