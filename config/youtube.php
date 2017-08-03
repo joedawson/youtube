@@ -27,11 +27,6 @@ return [
     ],
 
     /**
-     * Developer key.
-     */
-    'developer_key' => env('GOOGLE_DEVELOPER_KEY', null),
-
-    /**
      * Route URI's
      */
     'routes' => [
