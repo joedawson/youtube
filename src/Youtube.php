@@ -307,8 +307,8 @@ class Youtube
     public function saveAccessTokenToDB($accessToken)
     {
         return DB::table('youtube_access_tokens')->insert([
-            'access_token' => $accessToken,
-            'created_at'   => Carbon::createFromTimestamp(json_decode($accessToken)->created)
+            'access_token' => json_encode($accessToken),
+            'created_at'   => Carbon::createFromTimestamp($accessToken['created'])
         ]);
     }
 
