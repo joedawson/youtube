@@ -3,11 +3,6 @@
 return [
 
     /**
-     * Application Name.
-     */
-    'application_name' => env('APP_NAME', 'Your Application'),
-
-    /**
      * Client ID.
      */
     'client_id' => env('GOOGLE_CLIENT_ID', null),

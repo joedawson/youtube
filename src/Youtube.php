@@ -285,13 +285,11 @@ class Youtube
             throw new Exception('A Google "client_id" and "client_secret" must be configured.');
         }
 
-        $client->setApplicationName($this->app->config->get('youtube.application_name'));
         $client->setClientId($this->app->config->get('youtube.client_id'));
         $client->setClientSecret($this->app->config->get('youtube.client_secret'));
         $client->setScopes($this->app->config->get('youtube.scopes'));
         $client->setAccessType('offline');
         $client->setApprovalPrompt('force');
-        $client->setClassConfig('Google_Http_Request', 'disable_gzip', true);
         $client->setRedirectUri(url(
             $this->app->config->get('youtube.routes.prefix') 
             . '/' .
