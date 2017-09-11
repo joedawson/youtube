@@ -12,49 +12,49 @@ class Youtube
 {
     /**
      * Application Container
-     * 
+     *
      * @var Application
      */
     private $app;
 
     /**
      * Google Client
-     * 
+     *
      * @var \Google_Client
      */
     protected $client;
 
     /**
      * Google YouTube Service
-     * 
+     *
      * @var \Google_Service_YouTube
      */
     protected $youtube;
 
     /**
      * Video ID
-     * 
+     *
      * @var string
      */
     private $videoId;
 
     /**
      * Video Snippet
-     * 
+     *
      * @var array
      */
     private $snippet;
 
     /**
      * Thumbnail URL
-     * 
+     *
      * @var string
      */
     private $thumbnailUrl;
 
     /**
      * Constructor
-     * 
+     *
      * @param \Google_Client $client
      */
     public function __construct($app, Google_Client $client)
@@ -69,14 +69,15 @@ class Youtube
             $this->client->setAccessToken($accessToken);
         }
     }
-    
+
     /**
      * Upload the video to YouTube
-     * 
+     *
      * @param  string $path
-     * @param  array  $data
+     * @param  array $data
      * @param  string $privacyStatus
      * @return string
+     * @throws Exception
      */
     public function upload($path, array $data = [], $privacyStatus = 'public')
     {
@@ -87,22 +88,7 @@ class Youtube
         $this->handleAccessToken();
 
         try {
-            // Setup the Snippet
-            $snippet = new \Google_Service_YouTube_VideoSnippet();
-
-            if (array_key_exists('title', $data))       $snippet->setTitle($data['title']);
-            if (array_key_exists('description', $data)) $snippet->setDescription($data['description']);
-            if (array_key_exists('tags', $data))        $snippet->setTags($data['tags']);
-            if (array_key_exists('category_id', $data)) $snippet->setCategoryId($data['category_id']);
-
-            // Set the Privacy Status
-            $status = new \Google_Service_YouTube_VideoStatus();
-            $status->privacyStatus = $privacyStatus;
-
-            // Set the Snippet & Status
-            $video = new \Google_Service_YouTube_Video();
-            $video->setSnippet($snippet);
-            $video->setStatus($status);
+            $video = $this->getVideo($data, $privacyStatus);
 
             // Set the Chunk Size
             $chunkSize = 1 * 1024 * 1024;
@@ -155,11 +141,47 @@ class Youtube
     }
 
     /**
+     * Update the video on YouTube
+     *
+     * @param  string $id
+     * @param  array $data
+     * @param  string $privacyStatus
+     * @return string
+     * @throws Exception
+     */
+    public function update($id, array $data = [], $privacyStatus = 'public')
+    {
+        $this->handleAccessToken();
+
+        if (!$this->exists($id)) {
+            throw new Exception('A video matching id "'. $id .'" could not be found.');
+        }
+
+        try {
+            $video = $this->getVideo($data, $privacyStatus, $id);
+
+            $status = $this->youtube->videos->update('status,snippet', $video);
+
+            // Set ID of the Updated Video
+            $this->videoId = $status['id'];
+
+            // Set the Snippet from Updated Video
+            $this->snippet = $status['snippet'];
+        }  catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+
+        return $this;
+    }
+
+    /**
      * Set a Custom Thumbnail for the Upload
      *
-     * @param  string  $imagePath
-     *
+     * @param  string $imagePath
      * @return self
+     * @throws Exception
      */
     public function withThumbnail($imagePath)
     {
@@ -207,9 +229,9 @@ class Youtube
     /**
      * Delete a YouTube video by it's ID.
      *
-     * @param  int  $id
-     *
+     * @param  int $id
      * @return bool
+     * @throws Exception
      */
     public function delete($id)
     {
@@ -220,6 +242,39 @@ class Youtube
         }
 
         return $this->youtube->videos->delete($id);
+    }
+
+    /**
+     * @param $data
+     * @param $privacyStatus
+     * @param null $id
+     * @return \Google_Service_YouTube_Video
+     */
+    private function getVideo($data, $privacyStatus, $id = null)
+    {
+        // Setup the Snippet
+        $snippet = new \Google_Service_YouTube_VideoSnippet();
+
+        if (array_key_exists('title', $data))       $snippet->setTitle($data['title']);
+        if (array_key_exists('description', $data)) $snippet->setDescription($data['description']);
+        if (array_key_exists('tags', $data))        $snippet->setTags($data['tags']);
+        if (array_key_exists('category_id', $data)) $snippet->setCategoryId($data['category_id']);
+
+        // Set the Privacy Status
+        $status = new \Google_Service_YouTube_VideoStatus();
+        $status->privacyStatus = $privacyStatus;
+
+        // Set the Snippet & Status
+        $video = new \Google_Service_YouTube_Video();
+        if ($id)
+        {
+            $video->setId($id);
+        }
+
+        $video->setSnippet($snippet);
+        $video->setStatus($status);
+
+        return $video;
     }
 
     /**
@@ -273,8 +328,9 @@ class Youtube
     /**
      * Setup the Google Client
      *
-     * @param \Google_Client $client
-     * @return \Google_Client $client
+     * @param Google_Client $client
+     * @return Google_Client $client
+     * @throws Exception
      */
     private function setup(Google_Client $client)
     {
@@ -291,7 +347,7 @@ class Youtube
         $client->setAccessType('offline');
         $client->setApprovalPrompt('force');
         $client->setRedirectUri(url(
-            $this->app->config->get('youtube.routes.prefix') 
+            $this->app->config->get('youtube.routes.prefix')
             . '/' .
             $this->app->config->get('youtube.routes.redirect_uri')
         ));
@@ -314,7 +370,7 @@ class Youtube
 
     /**
      * Get the latest access token from the database.
-     * 
+     *
      * @return string
      */
     public function getLatestAccessTokenFromDB()
@@ -328,7 +384,7 @@ class Youtube
 
     /**
      * Handle the Access Token
-     * 
+     *
      * @return void
      */
     public function handleAccessToken()
