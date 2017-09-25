@@ -12,49 +12,49 @@ class Youtube
 {
     /**
      * Application Container
-     * 
+     *
      * @var Application
      */
     private $app;
 
     /**
      * Google Client
-     * 
+     *
      * @var \Google_Client
      */
     protected $client;
 
     /**
      * Google YouTube Service
-     * 
+     *
      * @var \Google_Service_YouTube
      */
     protected $youtube;
 
     /**
      * Video ID
-     * 
+     *
      * @var string
      */
     private $videoId;
 
     /**
      * Video Snippet
-     * 
+     *
      * @var array
      */
     private $snippet;
 
     /**
      * Thumbnail URL
-     * 
+     *
      * @var string
      */
     private $thumbnailUrl;
 
     /**
      * Constructor
-     * 
+     *
      * @param \Google_Client $client
      */
     public function __construct($app, Google_Client $client)
@@ -69,10 +69,10 @@ class Youtube
             $this->client->setAccessToken($accessToken);
         }
     }
-    
+
     /**
      * Upload the video to YouTube
-     * 
+     *
      * @param  string $path
      * @param  array  $data
      * @param  string $privacyStatus
@@ -291,7 +291,7 @@ class Youtube
         $client->setAccessType('offline');
         $client->setApprovalPrompt('force');
         $client->setRedirectUri(url(
-            $this->app->config->get('youtube.routes.prefix') 
+            $this->app->config->get('youtube.routes.prefix')
             . '/' .
             $this->app->config->get('youtube.routes.redirect_uri')
         ));
@@ -314,7 +314,7 @@ class Youtube
 
     /**
      * Get the latest access token from the database.
-     * 
+     *
      * @return string
      */
     public function getLatestAccessTokenFromDB()
@@ -328,7 +328,7 @@ class Youtube
 
     /**
      * Handle the Access Token
-     * 
+     *
      * @return void
      */
     public function handleAccessToken()
@@ -339,13 +339,11 @@ class Youtube
 
         if($this->client->isAccessTokenExpired())
         {
-            $accessToken = json_decode($accessToken);
-
             // If we have a "refresh_token"
-            if(property_exists($accessToken, 'refresh_token'))
+            if (array_key_exists('refresh_token', $accessToken))
             {
                 // Refresh the access token
-                $this->client->refreshToken($accessToken->refresh_token);
+                $this->client->refreshToken($accessToken['refresh_token']);
 
                 // Save the access token
                 $this->saveAccessTokenToDB($this->client->getAccessToken());
