@@ -76,7 +76,7 @@ class Youtube
      * @param  string $path
      * @param  array  $data
      * @param  string $privacyStatus
-     * @return string
+     * @return self
      */
     public function upload($path, array $data = [], $privacyStatus = 'public')
     {
