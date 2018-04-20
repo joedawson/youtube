@@ -110,6 +110,25 @@ return $youtube->getThumbnailUrl();
 
 **Please note, the maxiumum filesize for the thumbnail is 2MB**. Setting a thumbnail will not work if you attempt to use a thumbnail that exceeds this size.
 
+# Updating a Video
+
+To update a video, you simply need to pass the **videoId** of the video you wish to update and specify your video information.
+
+Here's an example:
+
+```php
+$video = Youtube::update($videoId, [
+    'title'       => 'My Awesome Video',
+    'description' => 'You can also specify your video description here.',
+    'tags'	      => ['foo', 'bar', 'baz'],
+    'category_id' => 10
+], $privacy);
+
+return $video->getVideoId();
+```
+
+Note: This request is explicit. Any params left out of the request will be removed.
+
 # Deleting a Video
 
 If you would like to delete a video, which of course is uploaded to your authorized channel, you will also have the ability to delete it:
