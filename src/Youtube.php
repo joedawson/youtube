@@ -311,7 +311,18 @@ class Youtube
             'created_at'   => Carbon::createFromTimestamp($accessToken['created'])
         ]);
     }
+     public function saveAccessTokenToDB2($accessToken,$value)//new table has nfcid
+    {
+        $nfcid=$value;
+        DB::table('youtube_access_tokens2')->insert([
+             'nfcid' => $value,
+             'access_token' => json_encode($accessToken),
+           // 'created_at'   => Carbon::createFromTimestamp($accessToken['created']),
+        ]);
+        $result = DB::table('youtube_access_tokens2')->where('nfcid','=',$value)->first(); 
+        return $result->access_token;
 
+    }
     /**
      * Get the latest access token from the database.
      *
