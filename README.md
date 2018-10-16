@@ -129,6 +129,42 @@ return $video->getVideoId();
 
 Note: This request is explicit. Any params left out of the request will be removed.
 
+# Get detail a Video
+
+To get a detail video, you simply need ** videoId **.
+
+Here's an example:
+
+```php
+$videoId = "whEjux4jd1M";
+$video = Youtube::getVideoInfo($videoId);
+
+$videoId = $video->getVideoId();
+$channelId = $video->getChannelId();
+$channelTitle = $video->getChannelTitle();
+$categoryId = $video->getCategoryId();
+$title = $video->getTitle();
+$description = $video->getDescription();
+$tags = $video->getTags();
+$pusblishedAt = $video->getPublishedAt();
+$thumbnailUri = $video->getThumbnail('medium'); // $opt = default, medium, high, and standard
+$snippetVideo = $video->getSnippet(); // get all attribute video
+
+$videoDetail = [
+    'videoId' => $videoId,
+    'channelId' => $channelId,
+    'channelTitle' => $channelTitle,
+    'categoryId' => $categoryId,
+    'title' => $title,
+    'description' => $description,
+    'tags' => $tags,
+    'pusblishedAt' => $pusblishedAt,
+    'thumbnailUri' => $thumbnailUri
+];
+
+return $videoDetail;
+```
+
 # Deleting a Video
 
 If you would like to delete a video, which of course is uploaded to your authorized channel, you will also have the ability to delete it:
