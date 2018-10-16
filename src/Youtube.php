@@ -123,6 +123,8 @@ class Youtube
             $this->snippet = $response['items'][0]['snippet'];
             // Set thumbnail
             $this->thumbnailUrl = $response['items'][0]['snippet']['thumbnails']['default']['url'];
+            // Set video id
+            $this->videoId = $response['items'][0]['id'];
         } catch (\Google_Service_Exception $e) {
             throw new Exception($e->getMessage());
         } catch (\Google_Exception $e) {
