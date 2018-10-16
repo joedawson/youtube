@@ -71,6 +71,70 @@ class Youtube
     }
 
     /**
+     * Get detail videos from YouTube
+     *
+     * @param  array $ids
+     * @return array $videos
+     * @throws Exception
+     */
+    public function getVideosInfo(array $ids = []){
+        $this->handleAccessToken();
+
+        if (!$this->exists($ids)) {
+            throw new Exception('A video matching id "'. $ids .'" could not be found.');
+        }
+
+        $videoIds = join(',', $ids);
+        $videos = [];
+        
+        try{
+            $response = $this->youtube->videos->listVideos('snippet, recordingDetails', ['id' => $videoIds]);
+            
+            // Display the detail videos
+            foreach ($response['items'] as $videoItem) {
+                $videos[$videoItem['id']] = $videoItem['snippet'];
+            }
+        } catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+
+        return $videos;
+    }
+
+    /**
+     * Get detail video from YouTube
+     *
+     * @param  string $id
+     * @return self
+     * @throws Exception
+     */
+    public function getVideoInfo($id){
+        $this->handleAccessToken();
+
+        if (!$this->exists($id)) {
+            throw new Exception('A video matching id "'. $id .'" could not be found.');
+        }
+        
+        try{
+            $response = $this->youtube->videos->listVideos('snippet, recordingDetails', ['id' => $id]);
+            // Set the Snippet
+            $this->snippet = $response['items'][0]['snippet'];
+            // Set thumbnail
+            $this->thumbnailUrl = $response['items'][0]['snippet']['thumbnails']['default']['url'];
+            // Set video id
+            $this->videoId = $response['items'][0]['id'];
+        } catch (\Google_Service_Exception $e) {
+            throw new Exception($e->getMessage());
+        } catch (\Google_Exception $e) {
+            throw new Exception($e->getMessage());
+        }
+
+        return $this;
+    }
+
+    /**
      * Upload the video to YouTube
      *
      * @param  string $path
@@ -323,6 +387,86 @@ class Youtube
     public function getThumbnailUrl()
     {
         return $this->thumbnailUrl;
+    }
+
+    /**
+     * Return the URL of the Thumbnail Video
+     *
+     * @return string
+     */
+    public function getThumbnail($type = 'default')
+    {
+        return $this->snippet['thumbnails'][$type]['url'];
+    }
+
+    /**
+     * Return the channel id of the Video
+     *
+     * @return string
+     */
+    public function getChannelId()
+    {
+        return $this->snippet['channelId'];
+    }
+
+    /**
+     * Return the channel title of the Video
+     *
+     * @return string
+     */
+    public function getChannelTitle()
+    {
+        return $this->snippet['channelTitle'];
+    }
+
+    /**
+     * Return the category id of the Video
+     *
+     * @return string
+     */
+    public function getCategoryId()
+    {
+        return $this->snippet['categoryId'];
+    }
+
+    /**
+     * Return the title of the detail Video
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->snippet['title'];
+    }
+
+    /**
+     * Return the description of the detail Video
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->snippet['description'];
+    }
+
+    /**
+     * Return the tags of the detail Video
+     *
+     * @return array
+     */
+    public function getTags()
+    {
+        return $this->snippet['tags'];
+    }
+
+    /**
+     * Return the published at of the detail Video
+     *
+     * @return string
+     */
+    public function getPublishedAt()
+    {
+        return $this->snippet['publishedAt'];
     }
 
     /**
