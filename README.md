@@ -131,7 +131,7 @@ Note: This request is explicit. Any params left out of the request will be remov
 
 # Get detail a Video
 
-To get a detail video, you simply need ** videoId **.
+To get a detail video, you simply need **videoId**.
 
 Here's an example:
 
