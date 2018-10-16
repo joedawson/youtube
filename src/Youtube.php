@@ -107,7 +107,7 @@ class Youtube
      * Get detail video from YouTube
      *
      * @param  string $id
-     * @return array $video
+     * @return self
      * @throws Exception
      */
     public function getVideoInfo($id){
@@ -390,7 +390,7 @@ class Youtube
     }
 
     /**
-     * Return the URL for the Custom Thumbnail
+     * Return the URL of the Thumbnail Video
      *
      * @return string
      */
