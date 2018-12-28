@@ -97,7 +97,7 @@ class Youtube
             $this->client->setDefer(true);
 
             // Build the request
-            $insert = $this->youtube->videos->insert('status,snippet', $video);
+            $insert = $this->youtube->videos->insert('status,snippet,localizations', $video);
 
             // Upload
             $media = new \Google_Http_MediaFileUpload(
@@ -160,7 +160,7 @@ class Youtube
         try {
             $video = $this->getVideo($data, $privacyStatus, $id);
 
-            $status = $this->youtube->videos->update('status,snippet', $video);
+            $status = $this->youtube->videos->update('status,snippet,localizations', $video);
 
             // Set ID of the Updated Video
             $this->videoId = $status['id'];
@@ -259,6 +259,7 @@ class Youtube
         if (array_key_exists('description', $data)) $snippet->setDescription($data['description']);
         if (array_key_exists('tags', $data))        $snippet->setTags($data['tags']);
         if (array_key_exists('category_id', $data)) $snippet->setCategoryId($data['category_id']);
+        if (array_key_exists('default_language', $data)) $snippet->setDefaultLanguage($data['default_language']);
 
         // Set the Privacy Status
         $status = new \Google_Service_YouTube_VideoStatus();
@@ -273,7 +274,10 @@ class Youtube
 
         $video->setSnippet($snippet);
         $video->setStatus($status);
-
+        
+        // Set Localizations
+        if (array_key_exists('localizations', $data)) $video['localizations'] = $data['localizations'];
+        
         return $video;
     }
 
