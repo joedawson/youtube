@@ -11,8 +11,7 @@
     "require": {
         "php": "^7.0",
         "illuminate/support": "^5.4",
-        "google/apiclient": "^2.2",
-        "nesbot/carbon": "^1.22"
+        "google/apiclient": "^2.2"
     },
     "require-dev": {
         "orchestra/testbench": "~3.2",
