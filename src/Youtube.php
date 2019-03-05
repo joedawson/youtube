@@ -3,7 +3,6 @@
 namespace Dawson\Youtube;
 
 use Exception;
-use Carbon\Carbon;
 use Google_Client;
 use Google_Service_YouTube;
 use Illuminate\Support\Facades\DB;
@@ -364,7 +363,7 @@ class Youtube
     {
         return DB::table('youtube_access_tokens')->insert([
             'access_token' => json_encode($accessToken),
-            'created_at'   => Carbon::createFromTimestamp($accessToken['created'])
+            'created_at'   => (new DateTime())->setTimestamp($accessToken['created']),
         ]);
     }
 
