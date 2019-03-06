@@ -363,7 +363,7 @@ class Youtube
     {
         return DB::table('youtube_access_tokens')->insert([
             'access_token' => json_encode($accessToken),
-            'created_at'   => (new DateTime())->setTimestamp($accessToken['created']),
+            'created_at'   => (new \DateTime())->setTimestamp($accessToken['created']),
         ]);
     }
 
