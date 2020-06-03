@@ -5,14 +5,17 @@ namespace Dawson\Youtube;
 use Exception;
 use Google_Client;
 use Google_Service_YouTube;
+use Google_Http_MediaFileUpload;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Youtube
 {
     /**
      * Application Container
      *
-     * @var Application
+     * @var \Illuminate\Contracts\Foundation\Application
      */
     private $app;
 
@@ -26,7 +29,7 @@ class Youtube
     /**
      * Google YouTube Service
      *
-     * @var \Google_Service_YouTube
+     * @var Google_Service_YouTube
      */
     protected $youtube;
 
@@ -52,18 +55,40 @@ class Youtube
     private $thumbnailUrl;
 
     /**
+     * @var Authenticatable
+     */
+    private $user;
+
+    /**
      * Constructor
      *
      * @param \Google_Client $client
+     * @throws Exception
      */
     public function __construct($app, Google_Client $client)
     {
         $this->app = $app;
-
         $this->client = $this->setup($client);
-
         $this->youtube = new \Google_Service_YouTube($this->client);
+        $this->setUser(Auth::user());
+        $this->setupAccessToken();
+    }
 
+    /**
+     * Set the user
+     *
+     * @param Authenticatable|null $user
+     */
+    public function setUser(Authenticatable $user = null)
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * Initialize access token for the configured user
+     */
+    public function setupAccessToken()
+    {
         if ($accessToken = $this->getLatestAccessTokenFromDB()) {
             $this->client->setAccessToken($accessToken);
         }
@@ -72,9 +97,9 @@ class Youtube
     /**
      * Upload the video to YouTube
      *
-     * @param  string $path
-     * @param  array $data
-     * @param  string $privacyStatus
+     * @param string $path
+     * @param array $data
+     * @param string $privacyStatus
      * @return self
      * @throws Exception
      */
@@ -142,9 +167,9 @@ class Youtube
     /**
      * Update the video on YouTube
      *
-     * @param  string $id
-     * @param  array $data
-     * @param  string $privacyStatus
+     * @param string $id
+     * @param array $data
+     * @param string $privacyStatus
      * @return self
      * @throws Exception
      */
@@ -193,7 +218,7 @@ class Youtube
 
             $setRequest = $this->youtube->thumbnails->set($videoId);
 
-            $media = new \Google_Http_MediaFileUpload(
+            $media = new Google_Http_MediaFileUpload(
                 $this->client,
                 $setRequest,
                 'image/png',
@@ -229,7 +254,6 @@ class Youtube
      * Delete a YouTube video by it's ID.
      *
      * @param  int $id
-     * @return bool
      * @throws Exception
      */
     public function delete($id)
@@ -279,9 +303,10 @@ class Youtube
     /**
      * Check if a YouTube video exists by it's ID.
      *
-     * @param  int  $id
+     * @param int $id
      *
      * @return bool
+     * @throws Exception
      */
     public function exists($id)
     {
@@ -357,11 +382,13 @@ class Youtube
     /**
      * Saves the access token to the database.
      *
-     * @param  string  $accessToken
+     * @param array $accessToken
+     * @return bool
      */
     public function saveAccessTokenToDB($accessToken)
     {
         return DB::table('youtube_access_tokens')->insert([
+            'user_id' => $this->user ? $this->user->id : null,
             'access_token' => json_encode($accessToken),
             'created_at'   => (new \DateTime())->setTimestamp($accessToken['created']),
         ]);
@@ -375,6 +402,7 @@ class Youtube
     public function getLatestAccessTokenFromDB()
     {
         $latest = DB::table('youtube_access_tokens')
+                    ->where('user_id', $this->user ? $this->user->id : null)
                     ->latest('created_at')
                     ->first();
 
@@ -385,6 +413,7 @@ class Youtube
      * Handle the Access Token
      *
      * @return void
+     * @throws Exception
      */
     public function handleAccessToken()
     {

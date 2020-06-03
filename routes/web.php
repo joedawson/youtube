@@ -11,10 +11,10 @@ Route::group(['prefix' => config('youtube.routes.prefix')], function() {
     Route::get(config('youtube.routes.authentication_uri'), function()
     {
         return redirect()->to(Youtube::createAuthUrl());
-    });
+    })->middleware(config('youtube.routes.authentication_uri_middleware'));
 
     /**
-     * Redirect
+     * Callback from google
      */
     Route::get(config('youtube.routes.redirect_uri'), function(Illuminate\Http\Request $request)
     {
@@ -24,9 +24,9 @@ Route::group(['prefix' => config('youtube.routes.prefix')], function() {
 
         $token = Youtube::authenticate($request->get('code'));
 
+        Youtube::setUser(auth()->user());
         Youtube::saveAccessTokenToDB($token);
 
         return redirect(config('youtube.routes.redirect_back_uri', '/'));
-    });
-
+    })->middleware(config('youtube.routes.redirect_back_uri_middleware'));
 });

@@ -1,7 +1,5 @@
 # Laravel 5 - YouTube Video Upload
 
-**Please note, that this package will only work with a single YouTube account and does not support multiple accounts.**
-
 ## Installation
 
 To install, use the following to pull the package in via Composer.
@@ -37,6 +35,23 @@ php artisan vendor:publish --provider="Dawson\Youtube\YoutubeServiceProvider"
 ```
 
 Now you'll want to run `php artisan migrate` to create the `youtube_access_tokens` table which as you would imagine, will contain your access tokens once you're authenticated correctly.
+
+If you want to use multiple youtube accounts, you have to configure the callback middlewares.
+
+Example with Laravel Sanctum:
+```php
+        /**
+         * The autentication URI
+         */
+        'authentication_uri' => 'auth',
+        'authentication_uri_middleware' => ['web','auth:sanctum'],
+
+        /**
+         * The redirect back URI
+         */
+        'redirect_back_uri' => '/',
+        'redirect_back_uri_middleware' => ['web','auth:sanctum'],
+```
 
 ### Obtaining your Credentials
 

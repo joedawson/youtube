@@ -46,12 +46,13 @@ return [
          * The autentication URI
          */
         'authentication_uri' => 'auth',
+        'authentication_uri_middleware' => [],
 
         /**
          * The redirect back URI
          */
         'redirect_back_uri' => '/',
-
+        'redirect_back_uri_middleware' => [],
     ]
 
 ];
