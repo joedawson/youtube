@@ -3,9 +3,10 @@
 namespace Dawson\Youtube;
 
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Dawson\Youtube\Facades\Youtube;
 
-class YoutubeController
+class YoutubeController extends Controller
 {
     public function authenticationController() {
         return redirect()->to(Youtube::createAuthUrl());
