@@ -8,7 +8,7 @@ use Dawson\Youtube\Facades\Youtube;
 
 class YoutubeController extends Controller
 {
-    public function authenticationController() {
+    public function authentication() {
         return redirect()->to(Youtube::createAuthUrl());
     }
 
