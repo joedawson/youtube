@@ -286,6 +286,7 @@ class Youtube
         // Set the Privacy Status
         $status = new \Google_Service_YouTube_VideoStatus();
         $status->privacyStatus = $privacyStatus;
+        if (array_key_exists('publish_at', $data)) $status->setPublishAt($data['publish_at']);
 
         // Set the Snippet & Status
         $video = new \Google_Service_YouTube_Video();
