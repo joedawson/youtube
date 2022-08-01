@@ -9,9 +9,10 @@
         }
     ],
     "require": {
-        "php": "^7.0",
+        "php": "^7.0|^8.0",
         "illuminate/support": "^5.4|^6.0|^7.0|^8.0",
-        "google/apiclient": "^2.2"
+        "google/apiclient": "^2.2",
+        "nesbot/carbon": "^1.22|^2.5"
     },
     "require-dev": {
         "orchestra/testbench": "~3.2",
