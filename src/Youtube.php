@@ -70,11 +70,7 @@ class Youtube
 
         $this->client = $this->setup($client);
 
-        // Define an object that will be used to make all API requests.
         $this->youtube = new \Google_Service_YouTube($this->client);
-
-        // YouTube Partner object used to make Content ID API requests.
-        $this->youtubePartner = new \Google_Service_YouTubePartner($this->client);
 
         if ($accessToken = $this->getLatestAccessTokenFromDB()) {
             $this->client->setAccessToken($accessToken);
