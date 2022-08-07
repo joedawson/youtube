@@ -291,13 +291,13 @@ class Youtube
         if (array_key_exists('category_id', $data)) $snippet->setCategoryId($data['category_id']);
         // Set the Privacy Status
         $status = new \Google_Service_YouTube_VideoStatus();
-        if (array_key_exists('privacyStatus', $data))
+        $status->privacyStatus = $privacyStatus;
+        if (array_key_exists('selfDeclaredMadeForKids', $data))
         {
-            $status->privacyStatus = $data['privacyStatus'];
+            $status->selfDeclaredMadeForKids = $data['selfDeclaredMadeForKids'];
         } else {
-            $status->privacyStatus = false;
+            $status->selfDeclaredMadeForKids = false;
         }
-        
         // Set the Snippet & Status
         $video = new \Google_Service_YouTube_Video();
         if ($id) {
