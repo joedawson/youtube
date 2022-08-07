@@ -10,6 +10,12 @@ To install, use the following to pull the package in via Composer.
 composer require dawson/youtube
 ```
 
+For my test
+
+```
+composer require leknoppix/youtube
+```
+
 Now register the Service provider in `config/app.php`
 
 ```php
@@ -67,7 +73,7 @@ Previously, users of this package have reported issues with their access token(s
 
 **You need to check that a `refresh_token` exists within this value. If this is correct, you're all set to begin uploading.**
 
-You will also want to disable the routes used for authorization as they will no longer be required since you are now autheticated. The token you just reviewed, assuming as a `refresh_token` will automatically be handled. 
+You will also want to disable the routes used for authorization as they will no longer be required since you are now autheticated. The token you just reviewed, assuming as a `refresh_token` will automatically be handled.
 
 # Upload a Video
 
@@ -86,7 +92,7 @@ $video = Youtube::upload($fullPathToVideo, [
 return $video->getVideoId();
 ```
 
-The above will return the ID of the uploaded video to YouTube. (*i.e dQw4w9WgXcQ*)
+The above will return the ID of the uploaded video to YouTube. (_i.e dQw4w9WgXcQ_)
 
 By default, video uploads are public. If you would like to change the privacy of the upload, you can do so by passing a third parameter to the upload method.
 
