@@ -291,7 +291,13 @@ class Youtube
         if (array_key_exists('category_id', $data)) $snippet->setCategoryId($data['category_id']);
         // Set the Privacy Status
         $status = new \Google_Service_YouTube_VideoStatus();
-        $status->privacyStatus = $privacyStatus;
+        if (array_key_exists('privacyStatus', $data))
+        {
+            $status->privacyStatus = $data['privacyStatus'];
+        } else {
+            $status->privacyStatus = false;
+        }
+        
         // Set the Snippet & Status
         $video = new \Google_Service_YouTube_Video();
         if ($id) {
