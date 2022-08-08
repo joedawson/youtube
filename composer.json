@@ -24,12 +24,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Dawson\\Youtube\\": "src/"
+            "Leknoppix\\Youtube\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Dawson\\Youtube\\Tests\\": "tests/"
+            "Leknoppix\\Youtube\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "stable",

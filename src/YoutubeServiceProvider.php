@@ -1,6 +1,6 @@
 <?php
 
-namespace leknoppix\Youtube;
+namespace Leknoppix\Youtube;
 
 use Illuminate\Support\ServiceProvider;
 

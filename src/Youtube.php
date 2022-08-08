@@ -1,12 +1,12 @@
 <?php
 
-namespace leknoppix\Youtube;
+namespace Leknoppix\Youtube;
 
 use Exception;
-use Carbon\Carbon;
 use Google_Client;
 use Google_Service_YouTube;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class Youtube
 {
