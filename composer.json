@@ -42,5 +42,10 @@
                 "Youtube": "Leknoppix\\Youtube\\Facades\\Youtube"
             }
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "kylekatarnls/update-helper": true
+        }
     }
 }

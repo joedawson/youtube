@@ -1,6 +1,6 @@
 <?php
 
-namespace Leknoppix\Youtube;
+namespace leknoppix\Youtube;
 
 use Exception;
 use Carbon\Carbon;
