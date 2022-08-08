@@ -1,17 +1,21 @@
 {
-    "name": "dawson/youtube",
+    "name": "leknoppix/youtube",
     "description": "Upload a video to YouTube with Laravel 5.",
     "license": "MIT",
     "authors": [
         {
             "name": "Joe Dawson",
             "email": "hi@joedawson.me"
+        }, {
+            "name": "Pascal Canadas",
+            "email": "pascal@mirandais.ovh"
         }
     ],
     "require": {
-        "php": "^7.0",
+        "php": "^7.0|^8.0",
         "illuminate/support": "^5.4|^6.0|^7.0|^8.0",
-        "google/apiclient": "^2.2"
+        "google/apiclient": "^2.2",
+        "nesbot/carbon": "^1.22|^2.5"
     },
     "require-dev": {
         "orchestra/testbench": "~3.2",
@@ -32,10 +36,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Dawson\\Youtube\\YoutubeServiceProvider"
+                "Leknoppix\\Youtube\\YoutubeServiceProvider"
             ],
             "aliases": {
-                "Youtube": "Dawson\\Youtube\\Facades\\Youtube"
+                "Youtube": "Leknoppix\\Youtube\\Facades\\Youtube"
             }
         }
     }

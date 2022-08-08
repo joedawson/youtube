@@ -1,6 +1,6 @@
 <?php
 
-namespace Dawson\Youtube\Facades;
+namespace Leknoppix\Youtube\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

@@ -1,13 +1,16 @@
-# Laravel 5 - YouTube Video Upload
+# Laravel - YouTube Video Upload
 
 **Please note, that this package will only work with a single YouTube account and does not support multiple accounts.**
+
+\*\*This project is based on the repository of joedawson /
+Youtube
 
 ## Installation
 
 To install, use the following to pull the package in via Composer.
 
 ```
-composer require dawson/youtube
+composer require leknoppix/youtube
 ```
 
 Now register the Service provider in `config/app.php`
@@ -15,7 +18,7 @@ Now register the Service provider in `config/app.php`
 ```php
 'providers' => [
     ...
-    Dawson\Youtube\YoutubeServiceProvider::class,
+    Leknoppix\Youtube\YoutubeServiceProvider::class,
 ],
 ```
 
@@ -24,7 +27,7 @@ And also add the alias to the same file.
 ```php
 'aliases' => [
     ...
-    'Youtube' => Dawson\Youtube\Facades\Youtube::class,
+    'Youtube' => Leknoppix\Youtube\Facades\Youtube::class,
 ],
 ```
 
@@ -33,7 +36,7 @@ And also add the alias to the same file.
 You now need to publish the `youtube.php` config and migrations.
 
 ```
-php artisan vendor:publish --provider="Dawson\Youtube\YoutubeServiceProvider"
+php artisan vendor:publish --provider="Leknoppix\Youtube\YoutubeServiceProvider"
 ```
 
 Now you'll want to run `php artisan migrate` to create the `youtube_access_tokens` table which as you would imagine, will contain your access tokens once you're authenticated correctly.
@@ -67,7 +70,7 @@ Previously, users of this package have reported issues with their access token(s
 
 **You need to check that a `refresh_token` exists within this value. If this is correct, you're all set to begin uploading.**
 
-You will also want to disable the routes used for authorization as they will no longer be required since you are now autheticated. The token you just reviewed, assuming as a `refresh_token` will automatically be handled. 
+You will also want to disable the routes used for authorization as they will no longer be required since you are now autheticated. The token you just reviewed, assuming as a `refresh_token` will automatically be handled.
 
 # Upload a Video
 
@@ -86,7 +89,7 @@ $video = Youtube::upload($fullPathToVideo, [
 return $video->getVideoId();
 ```
 
-The above will return the ID of the uploaded video to YouTube. (*i.e dQw4w9WgXcQ*)
+The above will return the ID of the uploaded video to YouTube. (_i.e dQw4w9WgXcQ_)
 
 By default, video uploads are public. If you would like to change the privacy of the upload, you can do so by passing a third parameter to the upload method.
 
