@@ -1,4 +1,4 @@
-# Laravel 5 - YouTube Video Upload
+# Laravel - YouTube Video Upload
 
 **Please note, that this package will only work with a single YouTube account and does not support multiple accounts.**
 
