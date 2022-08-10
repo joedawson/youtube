@@ -323,6 +323,8 @@ class Youtube
         if (array_key_exists('description', $data)) $snippet->setDescription($data['description']);
         if (array_key_exists('tags', $data))        $snippet->setTags($data['tags']);
         if (array_key_exists('category_id', $data)) $snippet->setCategoryId($data['category_id']);
+        if (array_key_exists('defaultAudioLanguage', $data)) $snippet->setDefaultLanguage($data['defaultAudioLanguage']);
+        if (array_key_exists('defaultAudioLanguage', $data)) $snippet->setDefaultAudioLanguage($data['defaultAudioLanguage']);
 
         // Set the Privacy Status
         $status = new \Google_Service_YouTube_VideoStatus();
