@@ -335,6 +335,11 @@ class Youtube
         } else {
             $status->selfDeclaredMadeForKids = false;
         }
+        if (array_key_exists('setEmbeddable', $data)) {
+            $status->setEmbeddable = $data['setEmbeddable'];
+        } else {
+            $status->setEmbeddable = false;
+        }
         // Set the Snippet & Status
         $video = new \Google_Service_YouTube_Video();
         if ($id) {
