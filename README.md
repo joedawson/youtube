@@ -1,4 +1,4 @@
-# Laravel 5 - YouTube Video Upload
+# Laravel 9 - YouTube Video Upload
 
 **Please note, that this package will only work with a single YouTube account and does not support multiple accounts.**
 
@@ -138,6 +138,14 @@ Youtube::delete($videoId);
 ```
 
 When deleting a video, it will check if exists before attempting to delete.
+
+# Get YouTube channel information
+
+You can get Channel ID, Channel title and Poster of active Youtube channel:
+
+```php
+Youtube::getChannelInfo();
+```
 
 # Questions
 

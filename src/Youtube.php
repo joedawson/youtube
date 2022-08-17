@@ -355,15 +355,17 @@ class Youtube
     }
 
     /**
-     * Saves the access token to the database.
+     * Saves the access token and channel information to the database.
      *
      * @param  string  $accessToken
      */
     public function saveAccessTokenToDB($accessToken)
     {
+        $channel_info = $this->setChannelInfo();
         return DB::table('youtube_access_tokens')->insert([
             'access_token' => json_encode($accessToken),
-            'created_at'   => (new \DateTime())->setTimestamp($accessToken['created']),
+            'channel_info' => json_encode($channel_info),
+            'created_at' => (new \DateTime())->setTimestamp($accessToken['created']),
         ]);
     }
 
@@ -404,6 +406,44 @@ class Youtube
                 $this->saveAccessTokenToDB($this->client->getAccessToken());
             }
         }
+    }
+
+    /**
+     * Get channel information from Youtube
+     *
+     * @return array|null
+     */
+    private function setChannelInfo()
+    {
+        $item = $this->youtube->channels->listChannels('snippet,id,contentOwnerDetails', ['mine' => true])->getItems();
+        $items = is_array($item) ? reset($item) : null;
+        if ($items) {
+            $channelId = $items['id'] ?? null;
+            $title = $items->snippet['title'] ?? null;
+            $poster = $items->snippet->thumbnails->medium->url ?? null;
+
+            return [
+                'channelId' => $channelId,
+                'title' => $title,
+                'poster' => $poster,
+            ];
+        }
+        return null;
+    }
+
+    /**
+     * Get channel information from DB
+     *
+     * @return mixed
+     */
+    public function getChannelInfo()
+    {
+        $latest = DB::table('youtube_access_tokens')
+            ->select('channel_info')
+            ->latest('created_at')
+            ->first();
+
+        return json_decode($latest->channel_info ?? null, true);
     }
 
     /**
