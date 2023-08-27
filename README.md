@@ -1,3 +1,5 @@
+> 🚨 I am no longer able to maintain this project, therefore please consider this abandoned.
+
 # Laravel 5 - YouTube Video Upload
 
 **Please note, that this package will only work with a single YouTube account and does not support multiple accounts.**
@@ -67,7 +69,7 @@ Previously, users of this package have reported issues with their access token(s
 
 **You need to check that a `refresh_token` exists within this value. If this is correct, you're all set to begin uploading.**
 
-You will also want to disable the routes used for authorization as they will no longer be required since you are now autheticated. The token you just reviewed, assuming as a `refresh_token` will automatically be handled. 
+You will also want to disable the routes used for authorization as they will no longer be required since you are now autheticated. The token you just reviewed, assuming as a `refresh_token` will automatically be handled.
 
 # Upload a Video
 
